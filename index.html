@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Reservas - Salas de Reunión</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 40px;
+        }
+        
+        .reservation-form {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+        
+        .reservations-display {
+            margin-top: 40px;
+        }
+        
+        .reservations-display h2 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 300;
+        }
+        
+        .sala-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid #3498db;
+        }
+        
+        .sala-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .reservation-item {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(116, 185, 255, 0.3);
+        }
+        
+        .reservation-info {
+            flex: 1;
+        }
+        
+        .reservation-time {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .reservation-person {
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .delete-btn:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+        
+        .no-reservations {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .reservation-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Sistema de Reservas</h1>
+            <p>Salas de Reunión - Horario: 7:00 AM a 6:00 PM</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="reservation-form">
+                <h2 style="margin-bottom: 30px; color: #2c3e50; text-align: center; font-weight: 300;">Nueva Reserva</h2>
+                
+                <div id="alertContainer"></div>
+                
+                <form id="reservationForm">
+                    <div class="form-group">
+                        <label for="personName">Nombre de la Persona</label>
+                        <input type="text" id="personName" name="personName" required placeholder="Ingrese su nombre completo">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sala">Sala</label>
+                        <select id="sala" name="sala" required>
+                            <option value="">Seleccione una sala</option>
+                            <option value="novartis">SALA Novartis</option>
+                            <option value="grunenthal">SALA Grunenthal</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="date">Fecha</label>
+                            <input type="date" id="date" name="date" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="time">Hora</label>
+                            <select id="time" name="time" required>
+                                <option value="">Seleccione una hora</option>
+                                <option value="07:00">7:00 AM</option>
+                                <option value="08:00">8:00 AM</option>
+                                <option value="09:00">9:00 AM</option>
+                                <option value="10:00">10:00 AM</option>
+                                <option value="11:00">11:00 AM</option>
+                                <option value="12:00">12:00 PM</option>
+                                <option value="13:00">1:00 PM</option>
+                                <option value="14:00">2:00 PM</option>
+                                <option value="15:00">3:00 PM</option>
+                                <option value="16:00">4:00 PM</option>
+                                <option value="17:00">5:00 PM</option>
+                                <option value="18:00">6:00 PM</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn">Reservar Sala</button>
+                </form>
+            </div>
+            
+            <div class="reservations-display">
+                <h2>Reservas Actuales</h2>
+                
+                <div class="sala-section">
+                    <h3 class="sala-title">🏢 SALA Novartis</h3>
+                    <div id="novartisReservations">
+                        <div class="no-reservations">No hay reservas para esta sala</div>
+                    </div>
+                </div>
+                
+                <div class="sala-section">
+                    <h3 class="sala-title">🏢 SALA Grunenthal</h3>
+                    <div id="gruenthalReservations">
+                        <div class="no-reservations">No hay reservas para esta sala</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulamos una base de datos con un array
+        let reservations = [];
+        let reservationIdCounter = 1;
+
+        // Establecer fecha mínima como hoy
+        document.getElementById('date').min = new Date().toISOString().split('T')[0];
+
+        // Función para mostrar alertas
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // Función para formatear la hora
+        function formatTime(time24) {
+            const [hours, minutes] = time24.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour % 12 || 12;
+            return `${hour12}:${minutes} ${ampm}`;
+        }
+
+        // Función para formatear la fecha
+        function formatDate(dateString) {
+            const date = new Date(dateString + 'T00:00:00');
+            return date.toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        // Función para verificar si una reserva ya existe
+        function reservationExists(sala, date, time) {
+            return reservations.some(reservation => 
+                reservation.sala === sala && 
+                reservation.date === date && 
+                reservation.time === time
+            );
+        }
+
+        // Función para agregar una reserva
+        function addReservation(personName, sala, date, time) {
+            if (reservationExists(sala, date, time)) {
+                showAlert('Ya existe una reserva para esta sala en esta fecha y hora.', 'error');
+                return false;
+            }
+
+            const reservation = {
+                id: reservationIdCounter++,
+                personName,
+                sala,
+                date,
+                time
+            };
+
+            reservations.push(reservation);
+            updateReservationsDisplay();
+            showAlert('Reserva creada exitosamente!', 'success');
+            return true;
+        }
+
+        // Función para eliminar una reserva
+        function deleteReservation(id) {
+            reservations = reservations.filter(reservation => reservation.id !== id);
+            updateReservationsDisplay();
+            showAlert('Reserva eliminada exitosamente!', 'success');
+        }
+
+        // Función para actualizar la visualización de reservas
+        function updateReservationsDisplay() {
+            const novartisContainer = document.getElementById('novartisReservations');
+            const gruenthalContainer = document.getElementById('gruenthalReservations');
+
+            // Filtrar reservas por sala
+            const novartisReservations = reservations.filter(r => r.sala === 'novartis');
+            const gruenthalReservations = reservations.filter(r => r.sala === 'grunenthal');
+
+            // Ordenar por fecha y hora
+            novartisReservations.sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
+            gruenthalReservations.sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
+
+            // Mostrar reservas de Novartis
+            if (novartisReservations.length === 0) {
+                novartisContainer.innerHTML = '<div class="no-reservations">No hay reservas para esta sala</div>';
+            } else {
+                novartisContainer.innerHTML = novartisReservations.map(reservation => `
+                    <div class="reservation-item">
+                        <div class="reservation-info">
+                            <div class="reservation-time">${formatDate(reservation.date)} - ${formatTime(reservation.time)}</div>
+                            <div class="reservation-person">👤 ${reservation.personName}</div>
+                        </div>
+                        <button class="delete-btn" onclick="deleteReservation(${reservation.id})">Eliminar</button>
+                    </div>
+                `).join('');
+            }
+
+            // Mostrar reservas de Grunenthal
+            if (gruenthalReservations.length === 0) {
+                gruenthalContainer.innerHTML = '<div class="no-reservations">No hay reservas para esta sala</div>';
+            } else {
+                gruenthalContainer.innerHTML = gruenthalReservations.map(reservation => `
+                    <div class="reservation-item">
+                        <div class="reservation-info">
+                            <div class="reservation-time">${formatDate(reservation.date)} - ${formatTime(reservation.time)}</div>
+                            <div class="reservation-person">👤 ${reservation.personName}</div>
+                        </div>
+                        <button class="delete-btn" onclick="deleteReservation(${reservation.id})">Eliminar</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Manejar el envío del formulario
+        document.getElementById('reservationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const personName = document.getElementById('personName').value.trim();
+            const sala = document.getElementById('sala').value;
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+
+            if (!personName || !sala || !date || !time) {
+                showAlert('Por favor complete todos los campos.', 'error');
+                return;
+            }
+
+            const success = addReservation(personName, sala, date, time);
+            if (success) {
+                // Limpiar el formulario
+                document.getElementById('reservationForm').reset();
+            }
+        });
+
+        // Inicializar la visualización
+        updateReservationsDisplay();
+    </script>
+</body>
+</html>
